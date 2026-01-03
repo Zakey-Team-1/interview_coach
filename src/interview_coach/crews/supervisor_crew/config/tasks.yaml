@@ -1,0 +1,23 @@
+create_interview_roadmap:
+  description: >
+    Conduct a comprehensive analysis of the Job Description to create a
+    strategic interview roadmap. Follow these steps:
+    1. Parse the Job Description to identify:
+       - Must-have technical skills and technologies
+       - Required behavioral competencies
+       - Experience level expectations
+       - Domain-specific knowledge requirements
+    2. Review any available historical performance data to:
+       - Identify recurring weak areas needing focus
+       - Note improvement trends to acknowledge
+       - Adjust difficulty based on growth trajectory
+    3. Design 5-7 strategic questions that:
+       - Cover the most critical JD requirements
+       - Balance technical depth with behavioral assessment
+       - Include mix of technical, scenario-based, and behavioral questions
+       - Progress logically from foundational to advanced topics
+  expected_output: >
+   A list of 5-7 targeted interview topic questions, these will be delegated to interviewers.
+   Each question should include the specific skill or competency being assessed
+
+  agent: supervisor

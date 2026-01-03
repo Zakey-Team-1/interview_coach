@@ -1,11 +1,29 @@
 [project]
 name = "interview_coach"
-version = "0.1.0"
-description = "interview-coach using crewAI"
+version = "1.0.0"
+description = "AI Interview Coach - Practice interviews with AI-powered feedback"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[tools]==1.7.1"
+    "chromadb>=1.1.1",
+    "crewai[google-genai,tools]==1.7.2",
+    "google-genai>=1.49.0",
+    "langchain>=1.2.0",
+    "langchain-community>=0.4.1",
+    "langchain-core>=1.2.6",
+    "langchain-text-splitters>=1.1.0",
+    "pymupdf>=1.26.7",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "python-multipart>=0.0.12",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
 ]
 
 [project.scripts]
@@ -13,6 +31,7 @@ kickoff = "interview_coach.main:kickoff"
 run_crew = "interview_coach.main:kickoff"
 plot = "interview_coach.main:plot"
 run_with_trigger = "interview_coach.main:run_with_trigger"
+serve = "interview_coach.api.main:run_server"
 
 [build-system]
 requires = ["hatchling"]

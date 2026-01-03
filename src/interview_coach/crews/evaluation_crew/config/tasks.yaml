@@ -1,0 +1,32 @@
+evaluate_performance:
+   description: >
+      Evaluate the provided interview transcript against the Job Description.
+      Inputs provided to this task:
+         - interview_transcript: Full interview transcript text
+         - job_description: The cleaned job description / role requirements
+      Your goal is to produce a concise, actionable report containing:
+         - 3 key strengths observed
+         - 3 primary weaknesses or gaps
+         - 3 concrete, prioritized pieces of advice the candidate can act on
+      Keep the report short (about 6-10 bullet points) and human-readable.
+   expected_output: >
+      A short evaluation report (plain text) with three sections: Strengths, Weaknesses, Advice.
+      Example format:
+
+      Strengths:
+      - [Strength 1]
+      - [Strength 2]
+      - [Strength 3]
+
+      Weaknesses:
+      - [Weakness 1]
+      - [Weakness 2]
+      - [Weakness 3]
+
+      Advice:
+      - [Actionable advice 1]
+      - [Actionable advice 2]
+      - [Actionable advice 3]
+   agent: evaluator
+   context: [interview_transcript, job_description]
+   output_file: evaluation_report.md

@@ -2,3 +2,36 @@
 __pycache__/
 lib/
 .DS_Store
+
+# RAG Database
+chroma_db/
+test_chroma_db/
+
+# Embedding Cache
+.embedding_cache/
+embedding_cache.json
+
+# Interview Results
+interview_results/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
