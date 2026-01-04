@@ -40,21 +40,6 @@ app = FastAPI(
     title="Interview Coach API",
     description="""
     AI-powered Interview Coach API for conducting and evaluating mock interviews.
-    
-    ## Features
-    
-    - **Resume Analysis**: Upload a PDF resume for contextual interview questions
-    - **Smart Questioning**: AI generates targeted questions based on job description
-    - **Follow-up Logic**: Automatic follow-up questions when responses need clarification
-    - **Comprehensive Evaluation**: Detailed feedback on technical skills, communication, and STAR method usage
-    
-    ## Workflow
-    
-    1. **POST /api/v1/sessions** - Start a new interview session
-    2. **GET /api/v1/sessions/{id}/question** - Get the next question
-    3. **POST /api/v1/sessions/{id}/response** - Submit your answer
-    4. Repeat steps 2-3 until interview completes
-    5. **GET /api/v1/sessions/{id}/evaluation** - Get your evaluation report
     """,
     version="1.0.0",
     lifespan=lifespan,

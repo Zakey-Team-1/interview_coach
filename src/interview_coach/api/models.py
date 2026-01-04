@@ -5,7 +5,7 @@ Pydantic models for API request and response schemas.
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
 
@@ -17,20 +17,9 @@ class InterviewStatus(str, Enum):
     """Status of an interview session."""
     INITIALIZING = "initializing"
     READY = "ready"
-    IN_PROGRESS = "in_progress"
-    AWAITING_RESPONSE = "awaiting_response"
     EVALUATING = "evaluating"
     COMPLETED = "completed"
     ERROR = "error"
-
-
-class QuestionStatus(str, Enum):
-    """Status of a question in the interview."""
-    PENDING = "pending"
-    ASKED = "asked"
-    ANSWERED = "answered"
-    FOLLOW_UP_ASKED = "follow_up_asked"
-    COMPLETED = "completed"
 
 
 # ============================================================================
@@ -64,23 +53,6 @@ class StartInterviewRequest(BaseModel):
     }
 
 
-class SubmitResponseRequest(BaseModel):
-    """Request to submit a candidate's response."""
-    response: str = Field(
-        ..., 
-        description="The candidate's response to the current question",
-        min_length=1
-    )
-    
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "response": "In my previous role at XYZ Company, I led a team of 5 developers..."
-            }
-        }
-    }
-
-
 # ============================================================================
 # Response Models
 # ============================================================================
@@ -91,8 +63,9 @@ class SessionInfo(BaseModel):
     status: InterviewStatus
     candidate_name: str
     created_at: datetime
-    current_question_index: int
     total_questions: int
+    questions_completed: int
+    awaiting_response: bool
 
 
 class StartInterviewResponse(BaseModel):
@@ -102,68 +75,59 @@ class StartInterviewResponse(BaseModel):
     message: str
     candidate_name: str
     total_questions: int
+    questions: List[str]
     
     model_config = {
         "json_schema_extra": {
             "example": {
                 "session_id": "session_20260103_143022",
                 "status": "ready",
-                "message": "Interview session initialized. Call /session/{session_id}/question to get the first question.",
+                "message": "Interview questions generated. Submit all responses via POST /sessions/{session_id}/responses.",
                 "candidate_name": "John Doe",
-                "total_questions": 6
+                "total_questions": 6,
+                "questions": [
+                    "Describe a challenging Python project you led.",
+                    "How do you ensure code quality in critical systems?"
+                ]
             }
         }
     }
 
 
-class QuestionResponse(BaseModel):
-    """Response containing the current interview question."""
-    session_id: str
-    question_number: int
-    total_questions: int
-    question: str
-    topic: str
-    resume_context: Optional[str] = Field(
-        None,
-        description="Relevant context from the candidate's resume"
+class SubmitResponsesRequest(BaseModel):
+    """Request to submit all responses to the interview questions."""
+    responses: List[str] = Field(
+        ..., description="Responses to the interview questions in order"
     )
-    is_follow_up: bool = False
-    status: QuestionStatus
-    
+
     model_config = {
         "json_schema_extra": {
             "example": {
-                "session_id": "session_20260103_143022",
-                "question_number": 1,
-                "total_questions": 6,
-                "question": "Can you walk me through a challenging Python project you've worked on?",
-                "topic": "Python Development Experience",
-                "resume_context": "Candidate has 5 years of Python experience...",
-                "is_follow_up": False,
-                "status": "asked"
+                "responses": [
+                    "I led a migration of our monolith to microservices...",
+                    "We adopted a testing pyramid..."
+                ]
             }
         }
     }
 
 
-class SubmitResponseResponse(BaseModel):
-    """Response after submitting a candidate answer."""
+class SubmitResponsesResponse(BaseModel):
+    """Acknowledges receipt of the batched responses."""
     session_id: str
     acknowledged: bool
     message: str
-    has_follow_up: bool
-    interview_complete: bool
+    evaluation_status: InterviewStatus
     next_action: str
-    
+
     model_config = {
         "json_schema_extra": {
             "example": {
                 "session_id": "session_20260103_143022",
                 "acknowledged": True,
-                "message": "Response recorded. Follow-up question available.",
-                "has_follow_up": True,
-                "interview_complete": False,
-                "next_action": "GET /session/{session_id}/question"
+                "message": "Responses recorded. Evaluation in progress.",
+                "evaluation_status": "evaluating",
+                "next_action": "GET /api/v1/sessions/{session_id}/evaluation"
             }
         }
     }
@@ -217,7 +181,6 @@ class SessionStatusResponse(BaseModel):
     session_id: str
     status: InterviewStatus
     candidate_name: str
-    current_question_index: int
     total_questions: int
     questions_completed: int
     created_at: datetime
