@@ -3,7 +3,7 @@ import logging
 from typing import List, Optional
 
 from interview_coach.crews.evaluation_crew.evaluation_crew import EvaluationCrew
-from interview_coach.questions_flow import InterviewServiceFlow, InterviewSessionState
+from interview_coach.questions_flow import GenerateInterviewQuestionsFlow, InterviewSessionState
 from rag.rag_service import ResumeRAGService
 from interview_coach.api.session_manager import InterviewSession, session_manager
 
@@ -25,7 +25,7 @@ class InterviewService:
     """
     
     def __init__(self):
-        self._sessions: dict[str, InterviewServiceFlow] = {}
+        self._sessions: dict[str, GenerateInterviewQuestionsFlow] = {}
         self.rag_service = ResumeRAGService()
     
     async def initialize_session(
@@ -40,7 +40,7 @@ class InterviewService:
         Returns InterviewSession object for routes to use.
         """
         # Create and run the flow for initialization
-        flow = InterviewServiceFlow()
+        flow = GenerateInterviewQuestionsFlow()
         
         payload = {
             "candidate_name": candidate_name,
