@@ -70,14 +70,14 @@ class GenerateInterviewQuestionsFlow(Flow[InterviewSessionState]):
     # ========================================================================
     
     @start()
-    def prepare_session(self, payload: dict):
+    def prepare_session(self):
         """Initialize the interview session with provided data."""
         logger.info("🚀 Preparing interview session...")
-        
-        # Extract payload data
-        self.state.resume_pdf_path = payload.get('resume_pdf_path', '')
-        self.state.job_description = payload.get('job_description', '')
-        self.state.candidate_name = payload.get('candidate_name', 'Candidate')
+
+        # # State is pre-populated from kickoff inputs; ensure defaults are set
+        # self.state.resume_pdf_path = getattr(self.state, 'resume_pdf_path', '') or ''
+        # self.state.job_description = getattr(self.state, 'job_description', '') or ''
+        # self.state.candidate_name = getattr(self.state, 'candidate_name', 'Candidate') or 'Candidate'
         
         # Generate session metadata
         self.state.session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -143,25 +143,21 @@ class GenerateInterviewQuestionsFlow(Flow[InterviewSessionState]):
     def create_interview_roadmap(self):
         """Generate interview roadmap using SupervisorCrew."""
         logger.info("🗺️ Creating interview roadmap...")
-        
+                
         result = (
             SupervisorCrew()
             .crew()
             .kickoff(inputs={"job_description": self.state.job_description})
         )
         
+                
         # Extract topics from result
         try:
             # Access the pydantic output from the task
-            interview_topics_model = result.outputs.get("create_interview_roadmap")  # type: ignore
-            if interview_topics_model and hasattr(interview_topics_model, 'interview_topics'):
-                self.state.interview_topics = interview_topics_model.interview_topics
-                logger.info(f"✅ Created {len(self.state.interview_topics)} interview topics")
-                for topic in self.state.interview_topics:
-                    logger.info(f"   • {topic}")
-            else:
-                logger.warning("⚠️ Failed to extract structured topics")
-                self.state.interview_topics = []
+            self.state.interview_topics = result.pydantic.interview_topics # type: ignore
+            logger.info(f"✅ Created {len(self.state.interview_topics)} interview topics")
+            for topic in self.state.interview_topics:
+                logger.info(f"   • {topic}")
         except Exception as e:
             logger.error(f"⚠️ Error extracting topics: {e}")
             self.state.interview_topics = []

@@ -28,10 +28,6 @@ class InterviewStatus(str, Enum):
 
 class StartInterviewRequest(BaseModel):
     """Request to start a new interview session."""
-    resume_pdf_path: Optional[str] = Field(
-        None, 
-        description="Path to the candidate's resume PDF file"
-    )
     job_description: str = Field(
         ..., 
         description="The job description to interview for",
@@ -45,7 +41,6 @@ class StartInterviewRequest(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "resume_pdf_path": "/path/to/resume.pdf",
                 "job_description": "We are looking for a Senior Python Developer with 5+ years of experience...",
                 "candidate_name": "John Doe"
             }

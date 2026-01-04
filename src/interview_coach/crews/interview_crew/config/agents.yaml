@@ -28,7 +28,7 @@ interviewer:
     that helps candidates improve with each session.
   llm_config: >
     gemini/gemini-3-flash-preview
-  verbose: true
+  verbose: false
   allow_delegation: false
   max_iter: 10
 

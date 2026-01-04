@@ -16,6 +16,8 @@ create_interview_roadmap:
        - Balance technical depth with behavioral assessment
        - Include mix of technical, scenario-based, and behavioral questions
        - Progress logically from foundational to advanced topics
+
+      Job Description: {job_description}
   expected_output: >
    A list of 5-7 targeted interview topic questions, these will be delegated to interviewers.
    Each question should include the specific skill or competency being assessed

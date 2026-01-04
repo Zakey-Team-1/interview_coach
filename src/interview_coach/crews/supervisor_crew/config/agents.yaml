@@ -22,5 +22,5 @@ supervisor:
     providing opportunities to showcase their best work.
   llm_config: >
     gemini/gemini-3-flash-preview
-  verbose: true
+  verbose: false
   allow_delegation: false

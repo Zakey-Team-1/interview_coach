@@ -48,9 +48,8 @@ class InterviewService:
             "resume_pdf_path": resume_pdf_path or ""
         }
         
-        # Run initialization (this runs prepare_session -> roadmap creation -> question generation)
-        # Note: Flow.kickoff is synchronous but will handle async methods internally
-        flow.kickoff(payload)
+        # Run initialization with the async entrypoint to avoid nested event loop issues
+        await flow.kickoff_async(payload)
         
         # Store flow for later use
         session_id = flow.state.session_id
@@ -114,10 +113,10 @@ class InterviewService:
         logger.info(f"🔍 Running evaluation for session {session_id}...")
         
         # Run evaluation crew (sync kickoff)
-        result = (
+        result = await (
             EvaluationCrew()
             .crew()
-            .kickoff(inputs={
+            .kickoff_async(inputs={
                 "interview_transcript": transcript_text,
                 "job_description": flow.state.job_description
             })

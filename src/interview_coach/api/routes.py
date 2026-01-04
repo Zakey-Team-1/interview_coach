@@ -4,11 +4,12 @@ FastAPI route handlers for the Interview Coach API.
 """
 
 import logging
+from pathlib import Path
+from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 
 from .models import (
-    StartInterviewRequest,
     StartInterviewResponse,
     SubmitResponsesRequest,
     SubmitResponsesResponse,
@@ -25,6 +26,25 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["interview"])
 
+RESUME_UPLOAD_DIR = Path("uploads/resumes")
+RESUME_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+ALLOWED_RESUME_EXTENSIONS = {".pdf"}
+
+
+async def _save_resume_upload(file: UploadFile) -> str:
+    """Persist an uploaded resume PDF and return the stored path."""
+    filename = Path(file.filename or "resume").name
+    suffix = Path(filename).suffix.lower()
+    if suffix not in ALLOWED_RESUME_EXTENSIONS:
+        raise ValueError("Only PDF resume uploads are supported.")
+
+    target_path = RESUME_UPLOAD_DIR / f"{uuid4().hex}_{filename}"
+    content = await file.read()
+    target_path.write_bytes(content)
+    await file.close()
+    logger.info(f"Saved uploaded resume to {target_path}")
+    return str(target_path.resolve())
+
 
 def get_interview_service():
     """Dependency to get the global interview service singleton."""
@@ -40,10 +60,12 @@ def get_interview_service():
     response_model=StartInterviewResponse,
     responses={400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
     summary="Start a new interview session",
-    description="Initialize a new interview session with job description and optional resume."
+    description="Initialize a new interview session with job description and an optional resume upload."
 )
 async def start_interview(
-    request: StartInterviewRequest,
+    candidate_name: str = Form("Candidate"),
+    job_description: str = Form(..., min_length=50),
+    resume_pdf: UploadFile | None = File(None),
     service: InterviewService = Depends(get_interview_service)
 ) -> StartInterviewResponse:
     """
@@ -51,15 +73,20 @@ async def start_interview(
     
     This endpoint:
     1. Creates a new session
-    2. Ingests resume into RAG (if provided)
-    3. Generates interview roadmap
-    4. Returns session ID for subsequent calls
+    2. Persists an uploaded resume (if provided)
+    3. Ingests the resume into RAG
+    4. Generates interview roadmap
+    5. Returns session ID for subsequent calls
     """
     try:
+        resume_path = None
+        if resume_pdf is not None:
+            resume_path = await _save_resume_upload(resume_pdf)
+
         session = await service.initialize_session(
-            candidate_name=request.candidate_name,
-            job_description=request.job_description,
-            resume_pdf_path=request.resume_pdf_path
+            candidate_name=candidate_name,
+            job_description=job_description,
+            resume_pdf_path=resume_path
         )
         
         return StartInterviewResponse(

@@ -49,5 +49,5 @@ evaluator:
     making feedback credible and actionable.
   llm_config: >
     gemini/gemini-3-flash-preview
-  verbose: true
+  verbose: false
   allow_delegation: false

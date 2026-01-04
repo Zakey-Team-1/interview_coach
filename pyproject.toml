@@ -34,6 +34,7 @@ kickoff_generate_questions = "interview_coach.main:kickoff_generate_questions"
 plot_generate_questions = "interview_coach.main:plot_generate_questions"
 run_generate_questions_with_trigger = "interview_coach.main:run__generate_questions_with_trigger"
 serve = "interview_coach.api.main:run_server"
+test_rag = "rag_test:run_test_rag"
 
 [build-system]
 requires = ["hatchling"]
