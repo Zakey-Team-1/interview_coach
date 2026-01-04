@@ -3,11 +3,7 @@
 Main FastAPI application for the Interview Coach API.
 """
 
-from langfuse import get_client
-import openlit
-
- 
-
+import os
 import logging
 import sys
 from contextlib import asynccontextmanager
@@ -146,17 +142,22 @@ async def value_error_handler(request: Request, exc: ValueError):
 
 def run_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
     """Run the FastAPI server."""
-    import uvicorn
-    langfuse = get_client()
+    
+    from langfuse import get_client
  
+    langfuse = get_client()
+    
     # Verify connection
     if langfuse.auth_check():
         print("Langfuse client is authenticated and ready!")
     else:
         print("Authentication failed. Please check your credentials and host.")
-        
-
-    openlit.init()
+    
+    from openinference.instrumentation.crewai import CrewAIInstrumentor
+ 
+    CrewAIInstrumentor().instrument(skip_dep_check=True)
+    
+    import uvicorn
 
     uvicorn.run(
         "interview_coach.api.main:app",

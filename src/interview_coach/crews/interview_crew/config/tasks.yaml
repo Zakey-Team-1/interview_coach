@@ -3,26 +3,16 @@ conduct_interview_session:
     Generate a professional interview question based on the provided topic and resume context.
     
     INPUTS PROVIDED:
-    - current_question: {current_question} - The topic/skill area to ask about
+    - current_topic: {current_topic} - The topic/skill area to ask about
     - resume_context: {resume_context} - Relevant sections from the candidate's resume
     - candidate_name: {candidate_name}
-    - is_follow_up: {is_follow_up} - Whether this is a follow-up question
     
-    IF this is a PRIMARY question (is_follow_up = false):
-    1. Craft ONE well-structured interview question that:
+    Craft ONE well-structured interview question that:
        - Directly addresses the topic/skill area
        - References specific experience from the resume_context when available
        - Is open-ended to allow the candidate to demonstrate their knowledge
        - Encourages the use of STAR format (Situation, Task, Action, Result)
     
-    IF this is a FOLLOW-UP question (is_follow_up = true):
-    Previous response provided: {previous_response}
-    1. Analyze what was missing or unclear in the previous response
-    2. Craft ONE targeted follow-up that probes deeper:
-       - "Can you elaborate on your specific role in [aspect]?"
-       - "What challenges did you face and how did you overcome them?"
-       - "What was the measurable impact or outcome?"
-       - "How did that experience prepare you for this role?"
     
     QUESTION GUIDELINES:
     - Be professional but conversational

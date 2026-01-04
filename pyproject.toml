@@ -20,6 +20,7 @@ dependencies = [
     "langfuse>=3.11.2",
     "openlit>=1.34.30",
     "crewai-tools>=1.7.2",
+    "openinference-instrumentation-crewai>=0.1.17",
 ]
 
 [project.optional-dependencies]

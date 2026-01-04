@@ -1312,6 +1312,7 @@ dependencies = [
     { name = "langchain-core" },
     { name = "langchain-text-splitters" },
     { name = "langfuse" },
+    { name = "openinference-instrumentation-crewai" },
     { name = "openlit" },
     { name = "pymupdf" },
     { name = "python-multipart" },
@@ -1339,6 +1340,7 @@ requires-dist = [
     { name = "langchain-core", specifier = ">=1.2.6" },
     { name = "langchain-text-splitters", specifier = ">=1.1.0" },
     { name = "langfuse", specifier = ">=3.11.2" },
+    { name = "openinference-instrumentation-crewai", specifier = ">=0.1.17" },
     { name = "openlit", specifier = ">=1.34.30" },
     { name = "pymupdf", specifier = ">=1.26.7" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
@@ -2353,6 +2355,48 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5d/82/75e18932102756e3c6e2c8a63f6a3a3058b32580f7aa53d87daab4f2a26b/openai_agents-0.0.17.tar.gz", hash = "sha256:44f9c8e80b461c64cfdcf55d162ca8bb0594f4b2ada48daf1be34a8d4cd0759f", size = 1349794, upload-time = "2025-06-04T02:37:55.852Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c6/72/bfa64eaa006d78e6480a4463267a55c31920fdcca1f3ebb331ac1217f598/openai_agents-0.0.17-py3-none-any.whl", hash = "sha256:924e0be145b42fb8984e35ab9d14e4948a2251c3b122a02ca989b223e4d39c27", size = 121886, upload-time = "2025-06-04T02:37:54.351Z" },
+]
+
+[[package]]
+name = "openinference-instrumentation"
+version = "0.1.42"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openinference-semantic-conventions" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-sdk" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/00/d0/b19061a21fd6127d2857c77744a36073bba9c1502d1d5e8517b708eb8b7c/openinference_instrumentation-0.1.42.tar.gz", hash = "sha256:2275babc34022e151b5492cfba41d3b12e28377f8e08cb45e5d64fe2d9d7fe37", size = 23954, upload-time = "2025-11-05T01:37:46.869Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/71/43ee4616fc95dbd2f560550f199c6652a5eb93f84e8aa0039bc95c19cfe0/openinference_instrumentation-0.1.42-py3-none-any.whl", hash = "sha256:e7521ff90833ef7cc65db526a2f59b76a496180abeaaee30ec6abbbc0b43f8ec", size = 30086, upload-time = "2025-11-05T01:37:43.866Z" },
+]
+
+[[package]]
+name = "openinference-instrumentation-crewai"
+version = "0.1.17"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openinference-instrumentation" },
+    { name = "openinference-semantic-conventions" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "typing-extensions" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3a/7d/a33692382a2a82e963dad548811522a0fce64d497be895db1ce2ad121325/openinference_instrumentation_crewai-0.1.17.tar.gz", hash = "sha256:a978c93ff2a8122f9d35ddc00c58bdb9092f771718b35a96682175947a8e001b", size = 12246, upload-time = "2025-12-04T19:58:41.745Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ca/e9/8b7e170491a930bd7c680d48bccfb0c611d822f971130694324325b9bc8b/openinference_instrumentation_crewai-0.1.17-py3-none-any.whl", hash = "sha256:072b740dd3e0aa512054426808d80ba8bf8626e75149f0fb1ff35848501dd752", size = 13758, upload-time = "2025-12-04T19:58:38.593Z" },
+]
+
+[[package]]
+name = "openinference-semantic-conventions"
+version = "0.1.25"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0b/68/81c8a0b90334ff11e4f285e4934c57f30bea3ef0c0b9f99b65e7b80fae3b/openinference_semantic_conventions-0.1.25.tar.gz", hash = "sha256:f0a8c2cfbd00195d1f362b4803518341e80867d446c2959bf1743f1894fce31d", size = 12767, upload-time = "2025-11-05T01:37:45.89Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fd/3d/dd14ee2eb8a3f3054249562e76b253a1545c76adbbfd43a294f71acde5c3/openinference_semantic_conventions-0.1.25-py3-none-any.whl", hash = "sha256:3814240f3bd61f05d9562b761de70ee793d55b03bca1634edf57d7a2735af238", size = 10395, upload-time = "2025-11-05T01:37:43.697Z" },
 ]
 
 [[package]]
