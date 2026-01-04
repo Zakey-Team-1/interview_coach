@@ -17,6 +17,9 @@ dependencies = [
     "uvicorn[standard]>=0.32.0",
     "python-multipart>=0.0.12",
     "httpx>=0.27.0",
+    "langfuse>=3.11.2",
+    "openlit>=1.34.30",
+    "crewai-tools>=1.7.2",
 ]
 
 [project.optional-dependencies]
@@ -27,10 +30,9 @@ dev = [
 ]
 
 [project.scripts]
-kickoff = "interview_coach.main:kickoff"
-run_crew = "interview_coach.main:kickoff"
-plot = "interview_coach.main:plot"
-run_with_trigger = "interview_coach.main:run_with_trigger"
+kickoff_generate_questions = "interview_coach.main:kickoff_generate_questions"
+plot_generate_questions = "interview_coach.main:plot_generate_questions"
+run_generate_questions_with_trigger = "interview_coach.main:run__generate_questions_with_trigger"
 serve = "interview_coach.api.main:run_server"
 
 [build-system]

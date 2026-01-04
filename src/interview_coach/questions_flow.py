@@ -46,7 +46,7 @@ class InterviewSessionState(BaseModel):
 # Interview Flow
 # ============================================================================
 
-class InterviewServiceFlow(Flow[InterviewSessionState]):
+class GenerateInterviewQuestionsFlow(Flow[InterviewSessionState]):
     """
     CrewAI Flow for API-driven interview sessions.
     
