@@ -263,15 +263,7 @@ class GenerateInterviewQuestionsFlow(Flow[InterviewSessionState]):
             results = await InterviewCrew().crew().akickoff_for_each(
                 inputs=inputs)
 
-            self.state.questions = []
-            for result in results:  # type: ignore
-                # Handle result extraction (CrewOutput usually has .raw)
-                if hasattr(result, 'raw'):
-                    question_text = result.raw.strip()  # type: ignore
-                else:
-                    question_text = str(result).strip()
-
-                self.state.questions.append(question_text)
+            self.state.questions = [result.raw.strip() for result in results] # type: ignore
 
             span.update(input={"topics": self.state.interview_topics},
                         output={

@@ -1,25 +1,25 @@
 conduct_interview_session:
   description: >
-    Generate a high-impact interview question that bridges {current_topic} 
-    with a specific project found in {resume_context}.
+    You are interviewing a candidate.
     
-    INSTRUCTIONAL FRAMEWORK:
-    1. **Identify the Bridge**: Locate a specific achievement or responsibility 
-       in the resume where {current_topic} was applied.
-    2. **Target the Decision**: Do not ask for a description of the project. 
-       Instead, ask about a specific decision, challenge, or trade-off 
-       made during that project related to the topic.
-    3. **Enforce STAR+T**: Craft the question to encourage the candidate 
-       to provide the Situation, Task, Action, and Result—but specifically 
-       emphasizing the **Trade-off (T)**.
+    **Current Theme:** {current_topic}
+    **Candidate Resume:** {resume_context}
     
-    CONSTRAINTS:
-    - No "Knowledge Checks": (e.g., "What is a microservice?").
-    - Use "Application Prompts": (e.g., "At [Company], why did you choose 
-      microservices for [Project] instead of a monolith? What was the 
-      primary bottleneck you encountered?").
-    - Max 2 sentences. No "polite filler" (e.g., "I see here on your resume...").
+    TASK:
+    Generate ONE interview question.
     
+    GUIDELINES:
+    1. **The "Coffee Shop" Test**: The question must sound natural, like two engineers talking in a coffee shop. 
+    2. **Anchor to Reality**: Find a specific project in the {resume_context} that relates to the {current_topic}. Use the project name.
+    3. **Focus on Process**: Ask *how* or *why* they made a decision. Do not ask for a definition of terms.
+    4. **Short & Punchy**: Maximum 2 sentences.
+    
+    BAD EXAMPLE (Do Not Do This):
+    "In the Diabetes project, regarding the RAG architecture, can you explain the specific trade-offs of HNSW vs IVF and how that impacted latency?" (Too rigid, too detailed).
+    
+    GOOD EXAMPLE (Do This):
+    "I see you used RAG for the Diabetes Assistant. How did you handle the latency issues when the retrieval step got complicated?"
+
   expected_output: >
-    A single, bridge-style interview question. Provide only the question text.
+    A single string containing the interview question.
   agent: interviewer

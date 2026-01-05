@@ -1,20 +1,18 @@
 create_interview_roadmap:
   description: >
-    Analyze the Job Description and historical performance data to create a 
-    lean, high-signal interview roadmap.
+    Review the provided {job_description}.
     
-    1. **Identify the Pivot Points**: In {job_description}, find 5-7 areas where 
-       technical choice or behavioral judgment is most critical (e.g., not just 
-       "JavaScript," but "State Management Complexity").
-    2. **Define the Signal**: For each area, determine what a "Senior" level 
-       answer looks like versus a "Junior" level answer.
-    3. **Historical Calibration**: Review performance data to see if any 
-       topics need deeper "Stress Testing" due to common team weaknesses.
+    Output a list of 5 conversational themes we need to cover in the interview.
+    Each theme should be broad enough to allow for a conversation, but specific enough to be relevant.
+    
+    Do NOT include "signals" or "competencies." Just the theme and a brief note on why it matters.
 
   expected_output: >
-    A list of 5-7 High-Stakes Topics. Format:
-    - [Topic Name]: [Specific Competency] | [Target Signal: What to look for]
-    
-    Example: 
-    - Database Architecture: System Design | Signal: Ability to justify NoSQL vs SQL trade-offs.
+    A simple JSON list of themes.
+    Example:
+    [
+      "RAG Pipeline Optimization (Critical for our search feature)",
+      "Python Async handling (Needed for the high-traffic API)",
+      "Stakeholder Management (We work with non-technical PMs)"
+    ]
   agent: supervisor
