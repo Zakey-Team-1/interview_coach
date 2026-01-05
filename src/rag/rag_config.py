@@ -23,11 +23,11 @@ PDF_CONFIG = {
 
 CHUNKING_CONFIG = {
     # Size of each text chunk in characters
-    "chunk_size": 1000,
+    "chunk_size": 500,
     
     # Overlap between chunks in characters
     # Higher overlap can improve context continuity
-    "chunk_overlap": 200,
+    "chunk_overlap": 100,
     
     # Text separators (in order of preference)
     "separators": ["\n\n", "\n", ". ", " ", ""],
@@ -44,7 +44,7 @@ EMBEDDING_CONFIG = {
     
     # Output dimensionality for embeddings
     # Options: 768 (default), 256, 512
-    "output_dimensionality": 768,
+    "output_dimensionality": 512,
     
     # Batch size for embedding generation
     "batch_size": 100,
@@ -72,10 +72,10 @@ VECTORSTORE_CONFIG = {
 
 RETRIEVAL_CONFIG = {
     # Default number of chunks to retrieve
-    "default_k": 4,
+    "default_k": 3,
     
     # Maximum number of chunks to retrieve
-    "max_k": 10,
+    "max_k": 5,
     
     # Minimum similarity score (0-1)
     # Lower = more permissive, Higher = more strict
