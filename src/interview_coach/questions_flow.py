@@ -66,7 +66,7 @@ class GenerateInterviewQuestionsFlow(Flow[InterviewSessionState]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.rag_service = ResumeRAGService()
-        self.llm = LLM(model="gemini/gemini-3-flash-preview")
+        self.llm = LLM(model="gemini/gemini-2.5-flash-lite")
 
     # ========================================================================
     # Initialization Phase
