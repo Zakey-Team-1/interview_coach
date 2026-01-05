@@ -17,6 +17,7 @@ from .routes import router
 from .models import HealthResponse, ErrorResponse
 from .session_manager import session_manager
 
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -140,7 +141,7 @@ async def value_error_handler(request: Request, exc: ValueError):
 # Entry point for running directly
 # ============================================================================
 
-def run_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
+def run_server(host: str = "0.0.0.0", port: int = 8080, reload: bool = False):
     """Run the FastAPI server."""
     
     from langfuse import get_client
