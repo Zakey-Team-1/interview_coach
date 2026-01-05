@@ -1,27 +1,25 @@
 conduct_interview_session:
   description: >
-    Generate a professional interview question based on the provided topic and resume context.
+    Generate a high-impact interview question that bridges {current_topic} 
+    with a specific project found in {resume_context}.
     
-    INPUTS PROVIDED:
-    - current_topic: {current_topic} - The topic/skill area to ask about
-    - resume_context: {resume_context} - Relevant sections from the candidate's resume
-    - candidate_name: {candidate_name}
+    INSTRUCTIONAL FRAMEWORK:
+    1. **Identify the Bridge**: Locate a specific achievement or responsibility 
+       in the resume where {current_topic} was applied.
+    2. **Target the Decision**: Do not ask for a description of the project. 
+       Instead, ask about a specific decision, challenge, or trade-off 
+       made during that project related to the topic.
+    3. **Enforce STAR+T**: Craft the question to encourage the candidate 
+       to provide the Situation, Task, Action, and Result—but specifically 
+       emphasizing the **Trade-off (T)**.
     
-    Craft ONE well-structured interview question that:
-       - Directly addresses the topic/skill area
-       - References specific experience from the resume_context when available
-       - Is open-ended to allow the candidate to demonstrate their knowledge
-       - Encourages the use of STAR format (Situation, Task, Action, Result)
-    
-    
-    QUESTION GUIDELINES:
-    - Be professional but conversational
-    - Keep questions clear and focused (1-2 sentences max)
-    - Do NOT hint at expected answers
-    - Make questions relevant to the resume context provided
-    - Avoid yes/no questions - always be open-ended
+    CONSTRAINTS:
+    - No "Knowledge Checks": (e.g., "What is a microservice?").
+    - Use "Application Prompts": (e.g., "At [Company], why did you choose 
+      microservices for [Project] instead of a monolith? What was the 
+      primary bottleneck you encountered?").
+    - Max 2 sentences. No "polite filler" (e.g., "I see here on your resume...").
     
   expected_output: >
-    A single, well-crafted interview question. Just the question text, nothing else.
-    Do not include labels like "Question:" or explanations.
+    A single, bridge-style interview question. Provide only the question text.
   agent: interviewer

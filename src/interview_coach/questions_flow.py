@@ -77,11 +77,6 @@ class GenerateInterviewQuestionsFlow(Flow[InterviewSessionState]):
         """Initialize the interview session with provided data."""
         logger.info("🚀 Preparing interview session...")
 
-        # # State is pre-populated from kickoff inputs; ensure defaults are set
-        # self.state.resume_pdf_path = getattr(self.state, 'resume_pdf_path', '') or ''
-        # self.state.job_description = getattr(self.state, 'job_description', '') or ''
-        # self.state.candidate_name = getattr(self.state, 'candidate_name', 'Candidate') or 'Candidate'
-
         # Generate session metadata
         self.state.session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         self.state.timestamp = datetime.now().isoformat()
