@@ -4,169 +4,110 @@ Welcome to the Interview Coach Crew project, powered by [crewAI](https://crewai.
 
 ## Features
 
-- 🎯 **AI-Powered Mock Interviews**: Conducts realistic interview sessions based on resume and job description
-- 📊 **Performance Evaluation**: Provides comprehensive feedback and scoring
-- 📄 **PDF Resume Support**: Automatically processes PDF resumes using RAG (Retrieval-Augmented Generation)
-- 🔍 **Smart Context Retrieval**: Efficiently retrieves relevant resume information without overwhelming LLM context
-- 💾 **Session Management**: Saves interview transcripts and evaluation reports
-- 🔄 **Flow-Based Architecture**: Uses CrewAI Flow for orchestrating multi-agent workflows
+- 🎯 **AI-Powered Mock Interviews**: Conducts realistic interview sessions based on resume and job description.
+- 📄 **PDF Resume Support**: Automatically processes PDF resumes using RAG (Retrieval-Augmented Generation).
+- 🔍 **Smart Context Retrieval**: Efficiently retrieves relevant resume information without overwhelming LLM context.
+- 🚀 **Parallel Question Generation**: Generates a full set of curated questions in parallel for efficiency.
+- 🌐 **FastAPI Backend**: Robust API for session management and interview orchestration.
+- 🔄 **Flow-Based Architecture**: Uses CrewAI Flow for orchestrating multi-agent workflows.
+
+## Architecture
+
+The system is built on a **CrewAI Flow** (`GenerateInterviewQuestionsFlow`) that orchestrates the interview preparation process:
+
+1.  **Preprocessing**: The job description is cleaned and focused on technical requirements using an LLM.
+2.  **RAG Ingestion**: The candidate's resume (PDF) is ingested into a vector database (ChromaDB) using Google Gemini embeddings.
+3.  **Roadmap Generation**: A `SupervisorCrew` analyzes the job description to identify key interview topics.
+4.  **Contextual Retrieval**: For each topic, the RAG system retrieves relevant experience from the candidate's resume.
+5.  **Parallel Question Generation**: An `InterviewCrew` generates tailored interview questions for each topic in parallel, ensuring a comprehensive and personalized interview experience.
+
+## API Capabilities
+
+The project provides a FastAPI-based backend with the following capabilities:
+
+- **Session Management**: Start new interview sessions with resume uploads and job descriptions (`POST /api/v1/sessions`).
+- **Question Retrieval**: Access pre-generated, curated questions tailored to the candidate.
+- **Response Submission**: Submit candidate responses for the entire interview in a single batch (`POST /api/v1/sessions/{session_id}/responses`).
+- **Transcript Access**: Retrieve full transcripts of the interview session (`GET /api/v1/sessions/{session_id}/transcript`).
+- **Status Tracking**: Monitor the progress of the interview and evaluation.
+
+> ⚠️ **Note**: The **Evaluation feature** is currently under development and is not yet ready for production use.
 
 ## RAG System
 
-This project includes a sophisticated RAG system for handling large PDF resumes using **Google Gemini embeddings**. See [RAG_ARCHITECTURE.md](RAG_ARCHITECTURE.md) for detailed documentation on:
-- How RAG works in this application
-- PDF ingestion and vector storage using ChromaDB
-- Google Gemini embeddings integration
-- Resume retrieval during interviews
-- Testing and configuration options
+This project includes a sophisticated RAG system for handling large PDF resumes using **Google Gemini embeddings**.
+
+- **Ingestion**: PDF resumes are chunked and embedded using Google's Gemini models.
+- **Storage**: Embeddings are stored in a local **ChromaDB** vector store.
+- **Retrieval**: During the interview generation, relevant resume sections are retrieved based on the specific interview topic, ensuring the LLM has the right context without exceeding token limits.
 
 ## Installation
 
-Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, offering a seamless setup and execution experience.
+Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management.
 
-First, if you haven't already, install uv:
-
+1. Install uv:
 ```bash
 pip install uv
 ```
 
-Next, navigate to your project directory and install the dependencies:
-
-(Optional) Lock the dependencies and install them by using the CLI command:
+2. Install dependencies:
 ```bash
-crewai install
+uv sync
 ```
 
-### Customizing
-
-**Add your `GOOGLE_API_KEY` into the `.env` file**
-
-- Modify `src/interview_coach/config/agents.yaml` to define your agents
-- Modify `src/interview_coach/config/tasks.yaml` to define your tasks
-- Modify `src/interview_coach/crew.py` to add your own logic, tools and specific args
-- Modify `src/interview_coach/main.py` to add custom inputs for your agents and tasks
-- Modify `src/interview_coach/rag_config.py` to customize RAG parameters
+3. Set up your environment:
+Create a `.env` file and add your `GOOGLE_API_KEY`.
 
 ## Running the Project
 
-### Basic Usage (Demo Mode)
+### Starting the API Server
 
-To run with demo data:
+To start the FastAPI server:
 
 ```bash
-crewai run
+uv run serve
 ```
 
-### Running with PDF Resume
-
-To run an interview with a PDF resume:
-
-```bash
-python -m interview_coach.main run_with_trigger '{
-  "resume_pdf_path": "/path/to/resume.pdf",
-  "job_description": "Your job description here...",
-  "candidate_name": "Candidate Name:
-
-- Visit [crewAI documentation](https://docs.crewai.com)
-- Check [RAG_README.md](RAG_README.md) for RAG-specific questions
-- Review [examples_rag.py](examples_rag.py) for usage examples
-- Reach out through [crewAI GitHub](https://github.com/joaomdmoura/crewai)
-- [Join crewAI Discord](https://discord.com/invite/X4JWnZnxPb)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.
-
-## License
-
-This project uses crewAI and is subject to its licensing terms.
+The API will be available at `http://localhost:8000`. You can access the interactive documentation at `http://localhost:8000/docs`.
 
 ---
 
-Let's create amazing interview preparation experiences with the power of AI and crewAI! 🚀
-```bash
-python -m interview_coach.main run_with_trigger '{
-  "resume": "Your resume text here...",
-  "job_description": "Your job description here...",
-  "candidate_name": "Candidate Name"
-}'
-```
+## Understanding The Crews
 
-### Testing RAG System
+The system utilizes specialized crews to handle different stages of the interview process:
 
-Test the RAG system independently:
-
-```bash
-# Test with a PDF
-python src/interview_coach/rag_utils.py test /path/to/resume.pdf
-
-# List stored sessions
-python src/interview_coach/rag_utils.py list
-
-# Clear all sessions
-python src/interview_coach/rag_utils.py clear
-```
-
-### Running Examples
-
-See various usage examples:
-
-```bash
-# Run example 2 (test RAG independently)
-python examples_rag.py 2
-
-# Run example 4 (text resume without RAG)
-python examples_rag.py 4
-```
-
-## Understanding Your Crew
-
-The Interview Coach Crew is composed of multiple AI agents working together:
+### Supervisor Crew
+- **Supervisor Agent**: Analyzes the job description to identify key technical and behavioral topics, creating a structured interview roadmap.
 
 ### Interview Crew
-- **Interviewer Agent**: Conducts the mock interview based on resume and job description
-- **Question Generator**: Creates relevant interview questions
+- **Interviewer Agent**: Generates tailored, contextual interview questions for specific topics, leveraging retrieved information from the candidate's resume.
 
 ### Evaluation Crew
-- **Evaluator Agent**: Analyzes interview performance
-- **Scoring Agent**: Provides detailed scores and feedback
+- **Evaluator Agent**: (In Development) Analyzes the interview transcript to provide feedback and performance scoring.
 
-These agents collaborate through tasks defined in `config/tasks.yaml`, leveraging the RAG system to efficiently access resume information.
+These crews collaborate within the `GenerateInterviewQuestionsFlow`, which manages the state and execution order of the interview preparation.
 
 ## Project Structure
 
 ```
 interview_coach/
-├── src/interview_coach/
-│   ├── main.py                    # Main flow orchestration
-│   ├── rag_service.py            # RAG system core
-│   ├── rag_utils.py              # RAG utilities
-│   ├── crews/
-│   │   ├── interview_crew/       # Interview conducting agents
-│   │   └── evaluation_crew/      # Performance evaluation agents
-│   └── tools/
-│       ├── resume_retrieval_tool.py  # RAG retrieval tool
-│       └── custom_tool.py
-├── RAG_README.md                 # Detailed RAG documentation
-├── examples_rag.py              # RAG usage examples
-├── chroma_db/                   # Vector database storage
-└── interview_results/           # Saved interview sessions
+├── src/
+│   ├── interview_coach/
+│   │   ├── api/                  # FastAPI backend
+│   │   ├── crews/                # CrewAI agent definitions
+│   │   ├── questions_flow.py     # Main interview flow
+│   │   └── main.py               # CLI entry point
+│   ├── rag/                      # RAG system core
+│   └── tools/                    # Custom tools
+├── chroma_db/                    # Vector database storage
+└── uploads/                      # Uploaded resumes
 ```
-
-## Output
-
-After running an interview, results are saved in `interview_results/<session_id>/`:
-- `interview_transcript.txt` - Complete interview conversation
-- `evaluation_report.txt` - Performance analysis and feedback
-- `session_metadata.json` - Session information including RAG stats
 
 ## Support
 
 For support, questions, or feedback:
 
 - Visit [crewAI documentation](https://docs.crewai.com)
-- Check [RAG_ARCHITECTURE.md](RAG_ARCHITECTURE.md) for RAG-specific questions
-- Review [examples_rag.py](examples_rag.py) for usage examples
 - Reach out through [crewAI GitHub](https://github.com/joaomdmoura/crewai)
 - [Join crewAI Discord](https://discord.com/invite/X4JWnZnxPb)
 
