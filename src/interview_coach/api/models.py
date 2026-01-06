@@ -1,72 +1,25 @@
 # API Request/Response Models
 """
 Pydantic models for API request and response schemas.
+
+Simplified models for stateless service:
+- Question generation (sessions endpoint)
+- Standalone evaluation
 """
 
 from datetime import datetime
-from enum import Enum
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
 
 # ============================================================================
-# Enums
+# Response Models for Question Generation
 # ============================================================================
-
-class InterviewStatus(str, Enum):
-    """Status of an interview session."""
-    INITIALIZING = "initializing"
-    READY = "ready"
-    EVALUATING = "evaluating"
-    COMPLETED = "completed"
-    ERROR = "error"
-
-
-# ============================================================================
-# Request Models
-# ============================================================================
-
-class StartInterviewRequest(BaseModel):
-    """Request to start a new interview session."""
-    job_description: str = Field(
-        ..., 
-        description="The job description to interview for",
-        min_length=50
-    )
-    candidate_name: str = Field(
-        default="Candidate",
-        description="Name of the candidate"
-    )
-    
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "job_description": "We are looking for a Senior Python Developer with 5+ years of experience...",
-                "candidate_name": "John Doe"
-            }
-        }
-    }
-
-
-# ============================================================================
-# Response Models
-# ============================================================================
-
-class SessionInfo(BaseModel):
-    """Basic session information."""
-    session_id: str
-    status: InterviewStatus
-    candidate_name: str
-    created_at: datetime
-    total_questions: int
-    questions_completed: int
-    awaiting_response: bool
-
 
 class StartInterviewResponse(BaseModel):
-    """Response after starting a new interview."""
+    """Response after generating interview questions."""
     session_id: str
-    status: InterviewStatus
+    status: str
     message: str
     candidate_name: str
     total_questions: int
@@ -75,9 +28,9 @@ class StartInterviewResponse(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "session_id": "session_20260103_143022",
+                "session_id": "session_20260106_143022",
                 "status": "ready",
-                "message": "Interview questions generated. Submit all responses via POST /sessions/{session_id}/responses.",
+                "message": "Interview questions generated successfully. Use POST /evaluate to evaluate responses.",
                 "candidate_name": "John Doe",
                 "total_questions": 6,
                 "questions": [
@@ -89,120 +42,97 @@ class StartInterviewResponse(BaseModel):
     }
 
 
-class SubmitResponsesRequest(BaseModel):
-    """Request to submit all responses to the interview questions."""
-    responses: List[str] = Field(
-        ..., description="Responses to the interview questions in order"
-    )
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "responses": [
-                    "I led a migration of our monolith to microservices...",
-                    "We adopted a testing pyramid..."
-                ]
-            }
-        }
-    }
-
-
-class SubmitResponsesResponse(BaseModel):
-    """Acknowledges receipt of the batched responses."""
-    session_id: str
-    acknowledged: bool
-    message: str
-    evaluation_status: InterviewStatus
-    next_action: str
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "session_id": "session_20260103_143022",
-                "acknowledged": True,
-                "message": "Responses recorded. Evaluation in progress.",
-                "evaluation_status": "evaluating",
-                "next_action": "GET /api/v1/sessions/{session_id}/evaluation"
-            }
-        }
-    }
-
-
-class TranscriptEntry(BaseModel):
-    """Single entry in the interview transcript."""
-    question_number: int
-    topic: str
-    question: str
-    response: str
-    follow_up_question: Optional[str] = None
-    follow_up_response: Optional[str] = None
-    timestamp: datetime
-
-
-class InterviewTranscript(BaseModel):
-    """Complete interview transcript."""
-    session_id: str
-    candidate_name: str
-    entries: List[TranscriptEntry]
-    total_duration_seconds: Optional[float] = None
-
-
-class EvaluationResponse(BaseModel):
-    """Response containing the interview evaluation."""
-    session_id: str
-    candidate_name: str
-    status: InterviewStatus
-    evaluation_report: str
-    scores: Dict[str, Any] = Field(default_factory=dict)
-    transcript: InterviewTranscript
-    completed_at: datetime
-    
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "session_id": "session_20260103_143022",
-                "candidate_name": "John Doe",
-                "status": "completed",
-                "evaluation_report": "## Interview Evaluation\n\n...",
-                "scores": {"technical": 8.5, "communication": 9.0, "overall": 8.7},
-                "completed_at": "2026-01-03T14:45:30"
-            }
-        }
-    }
-
-
-class SessionStatusResponse(BaseModel):
-    """Response containing session status details."""
-    session_id: str
-    status: InterviewStatus
-    candidate_name: str
-    total_questions: int
-    questions_completed: int
-    created_at: datetime
-    last_activity: datetime
-    awaiting_response: bool
-
+# ============================================================================
+# Error Response
+# ============================================================================
 
 class ErrorResponse(BaseModel):
     """Standard error response."""
     error: str
     detail: str
-    session_id: Optional[str] = None
     
     model_config = {
         "json_schema_extra": {
             "example": {
-                "error": "SessionNotFound",
-                "detail": "No session found with ID: session_invalid",
-                "session_id": "session_invalid"
+                "error": "ValidationError",
+                "detail": "Job description must be at least 50 characters"
             }
         }
     }
 
 
-class HealthResponse(BaseModel):
-    """Health check response."""
-    status: str
-    version: str
-    timestamp: datetime
-    active_sessions: int
+# ============================================================================
+# Standalone Evaluation Models
+# ============================================================================
+
+class QuestionAnswerPairModel(BaseModel):
+    """A single question-answer pair from an interview."""
+    question: str = Field(..., description="The interview question asked", min_length=1)
+    answer: str = Field(..., description="The candidate's response to the question", min_length=1)
+    
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "question": "Tell me about a challenging Python project you led.",
+                "answer": "I led a migration of our monolithic application to microservices using FastAPI..."
+            }
+        }
+    }
+
+
+class StandaloneEvaluationRequest(BaseModel):
+    """Request for standalone interview evaluation without an active session."""
+    job_description: str = Field(
+        ...,
+        description="The job description for the role being interviewed for",
+        min_length=50
+    )
+    transcript: List[QuestionAnswerPairModel] = Field(
+        ...,
+        description="List of question-answer pairs from the interview",
+        min_length=1
+    )
+    candidate_name: Optional[str] = Field(
+        None,
+        description="Optional name of the candidate being evaluated"
+    )
+    
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "job_description": "We are looking for a Senior Python Developer with 5+ years of experience in building scalable web applications. The ideal candidate should have strong experience with FastAPI, async programming, and microservices architecture...",
+                "transcript": [
+                    {
+                        "question": "Tell me about a challenging Python project you led.",
+                        "answer": "I led a migration of our monolithic application to microservices..."
+                    },
+                    {
+                        "question": "How do you ensure code quality in critical systems?",
+                        "answer": "We adopted a testing pyramid approach with unit tests, integration tests..."
+                    }
+                ],
+                "candidate_name": "John Doe"
+            }
+        }
+    }
+
+
+class StandaloneEvaluationResponse(BaseModel):
+    """Response containing the standalone evaluation results."""
+    evaluation_report: str = Field(..., description="The detailed evaluation report in Markdown format")
+    candidate_name: Optional[str] = Field(None, description="Name of the evaluated candidate")
+    questions_evaluated: int = Field(..., description="Number of questions evaluated")
+    evaluated_at: datetime = Field(..., description="Timestamp when evaluation was completed")
+    scores: Dict[str, Any] = Field(default_factory=dict, description="Optional parsed scores")
+    
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "evaluation_report": "## 🌟 Executive Summary\n\nGreat job demonstrating your technical depth...",
+                "candidate_name": "John Doe",
+                "questions_evaluated": 6,
+                "evaluated_at": "2026-01-06T14:30:00",
+                "scores": {"technical": 8.5, "communication": 9.0, "overall": 8.7}
+            }
+        }
+    }

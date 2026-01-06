@@ -14,8 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .routes import router
-from .models import HealthResponse, ErrorResponse
-from .session_manager import session_manager
+from .models import ErrorResponse
 
 
 # Configure logging
@@ -81,19 +80,17 @@ async def root():
 
 @app.get(
     "/health",
-    response_model=HealthResponse,
     tags=["system"],
     summary="Health check",
     description="Check if the API is running and healthy."
 )
-async def health_check() -> HealthResponse:
+async def health_check():
     """Health check endpoint."""
-    return HealthResponse(
-        status="healthy",
-        version="1.0.0",
-        timestamp=datetime.now(),
-        active_sessions=session_manager.active_session_count
-    )
+    return {
+        "status": "healthy",
+        "version": "1.0.0",
+        "timestamp": datetime.now().isoformat()
+    }
 
 
 # ============================================================================
