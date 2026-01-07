@@ -1,124 +1,98 @@
-# Interview Coach Crew
+# Interview Coach
 
-Welcome to the Interview Coach Crew project, powered by [crewAI](https://crewai.com). This AI-powered interview coaching system helps candidates prepare for job interviews by conducting mock interviews and providing detailed performance evaluations.
+Welcome to the **Interview Coach**, an advanced AI-powered interview coaching system built with [crewAI](https://crewai.com). This system automates the end-to-end mock interview process—from analyzing job descriptions (JD) and resumes to generating tailored questions and producing comprehensive performance reports.
 
 ## Features
 
-- 🎯 **AI-Powered Mock Interviews**: Conducts realistic interview sessions based on resume and job description.
-- 📄 **PDF Resume Support**: Automatically processes PDF resumes using RAG (Retrieval-Augmented Generation).
-- 🔍 **Smart Context Retrieval**: Efficiently retrieves relevant resume information without overwhelming LLM context.
-- 🚀 **Parallel Question Generation**: Generates a full set of curated questions in parallel for efficiency.
-- 🌐 **FastAPI Backend**: Robust API for session management and interview orchestration.
-- 🔄 **Flow-Based Architecture**: Uses CrewAI Flow for orchestrating multi-agent workflows.
+* **AI-Powered Mock Interviews**: Generates realistic, high-signal questions by cross-referencing resumes with specific JD requirements.
+* **RAG-Enhanced Context**: Ingests PDF resumes into a RAG system to ensure questions are grounded in the candidate's actual experience.
+* **Parallel Processing**: Uses parallel agent execution to clean JDs and generate questions simultaneously, reducing latency.
+* **Comprehensive Evaluation**: A dedicated crew of agents evaluates responses to produce a detailed report covering strengths, weaknesses, and actionable advice.
+* **Stateless & Scalable**: A FastAPI backend designed for Cloud Run, utilizing Supabase for persistent data storage.
 
 ## Architecture
 
-The system is built on a **CrewAI Flow** (`GenerateInterviewQuestionsFlow`) that orchestrates the interview preparation process:
+The system is orchestrated using **CrewAI Flows**, following a structured 5-step pipeline:
 
-1.  **Preprocessing**: The job description is cleaned and focused on technical requirements using an LLM.
-2.  **RAG Ingestion**: The candidate's resume (PDF) is ingested into a vector database (ChromaDB) using Google Gemini embeddings.
-3.  **Roadmap Generation**: A `SupervisorCrew` analyzes the job description to identify key interview topics.
-4.  **Contextual Retrieval**: For each topic, the RAG system retrieves relevant experience from the candidate's resume.
-5.  **Parallel Question Generation**: An `InterviewCrew` generates tailored interview questions for each topic in parallel, ensuring a comprehensive and personalized interview experience.
+1. **Preprocessing & Ingestion**: In parallel, the system cleans/preprocesses the Job Description and ingests the Resume PDF into the RAG vector store.
+2. **Topic Identification**: A **Supervisor Agent** analyzes the cleaned JD to identify 5-7 core topics/skill sets required for the role.
+3. **Parallel Question Generation**: Each topic is passed to a **Question Generation Agent** in parallel. This agent uses relevant snippets from the Resume (via RAG) to create tailored, technical interview questions.
+4. **Frontend Delivery**: The curated list of questions is dispatched to the Google AI Studio-based frontend.
+5. **Evaluation Flow**: Once the user submits their answers, a **Crew of Agents** evaluates the responses against the JD to produce a final report including a summary, main strengths, weaknesses, and coaching advice.
 
-## API Capabilities
+## Tech Stack
 
-The project provides a FastAPI-based backend with the following capabilities:
+* **Framework**: [crewAI](https://crewai.com) (Agent Orchestration & Flows)
+* **Backend**: FastAPI (Python)
+* **Frontend**: Google AI Studio
+* **Database**: Supabase (Postgres)
+* **Embeddings**: Google Gemini Embeddings 001
+* **Deployment**: Google Cloud Run (CI/CD via GCP)
 
-- **Session Management**: Start new interview sessions with resume uploads and job descriptions (`POST /api/v1/sessions`).
-- **Question Retrieval**: Access pre-generated, curated questions tailored to the candidate.
-- **Response Submission**: Submit candidate responses for the entire interview in a single batch (`POST /api/v1/sessions/{session_id}/responses`).
-- **Transcript Access**: Retrieve full transcripts of the interview session (`GET /api/v1/sessions/{session_id}/transcript`).
-- **Status Tracking**: Monitor the progress of the interview and evaluation.
+## Observability & Monitoring
 
-> ⚠️ **Note**: The **Evaluation feature** is currently under development and is not yet ready for production use.
+To ensure the reliability of the multi-agent orchestration and to monitor LLM costs and latency, this project integrates LangFuse.
 
-## RAG System
+* Detailed Tracing: Every step of the CrewAI Flow is traced.
+* Performance Metrics: Track the latency of parallel agent execution and token usage for Google Gemini models.
 
-This project includes a sophisticated RAG system for handling large PDF resumes using **Google Gemini embeddings**.
+## 📡 API & Infrastructure
 
-- **Ingestion**: PDF resumes are chunked and embedded using Google's Gemini models.
-- **Storage**: Embeddings are stored in a local **ChromaDB** vector store.
-- **Retrieval**: During the interview generation, relevant resume sections are retrieved based on the specific interview topic, ensuring the LLM has the right context without exceeding token limits.
+### Stateless Backend
 
-## Installation
+The FastAPI backend is entirely **stateless**. It receives data via API calls, processes it through the CrewAI agents, and returns the response. This allows for seamless scaling on Google Cloud Run.
 
-Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management.
+### Deployment (CI/CD)
 
-1. Install uv:
-```bash
-pip install uv
-```
+The project is deployed directly to **Google Cloud Run** from the GitHub repository.
 
-2. Install dependencies:
-```bash
-uv sync
-```
+* **Pipeline**: A CI/CD pipeline is triggered on every commit to the `master` branch.
+* **Infrastructure**: Managed via Artifact Registry and Cloud Run for high availability.
 
-3. Set up your environment:
-Create a `.env` file and add your `GOOGLE_API_KEY`.
+## 📂 Project Structure
 
-## Running the Project
-
-### Starting the API Server
-
-To start the FastAPI server:
-
-```bash
-uv run serve
-```
-
-The API will be available at `http://localhost:8000`. You can access the interactive documentation at `http://localhost:8000/docs`.
-
----
-
-## Understanding The Crews
-
-The system utilizes specialized crews to handle different stages of the interview process:
-
-### Supervisor Crew
-- **Supervisor Agent**: Analyzes the job description to identify key technical and behavioral topics, creating a structured interview roadmap.
-
-### Interview Crew
-- **Interviewer Agent**: Generates tailored, contextual interview questions for specific topics, leveraging retrieved information from the candidate's resume.
-
-### Evaluation Crew
-- **Evaluator Agent**: (In Development) Analyzes the interview transcript to provide feedback and performance scoring.
-
-These crews collaborate within the `GenerateInterviewQuestionsFlow`, which manages the state and execution order of the interview preparation.
-
-## Project Structure
-
-```
+```text
 interview_coach/
 ├── src/
 │   ├── interview_coach/
-│   │   ├── api/                  # FastAPI backend
-│   │   ├── crews/                # CrewAI agent definitions
-│   │   ├── questions_flow.py     # Main interview flow
-│   │   └── main.py               # CLI entry point
-│   ├── rag/                      # RAG system core
-│   └── tools/                    # Custom tools
-├── chroma_db/                    # Vector database storage
-└── uploads/                      # Uploaded resumes
+│   │   ├── api/                 # Stateless FastAPI backend
+│   │   ├── crews/               # CrewAI agent & task definitions
+│   │   │   ├── supervisor/      # JD analysis crew
+│   │   │   ├── interview/       # Question generation crew
+│   │   │   └── evaluation/      # Response evaluation crew
+│   │   ├── questions_flow.py    # Main orchestration flow
+│   │   └── main.py              # Entry point
+│   ├── rag/                     # RAG system logic
+│   └── tools/                   # Custom tools for agents
+
 ```
 
-## Support
+## ⚙️ Installation & Setup
 
-For support, questions, or feedback:
+Ensure you have Python `>=3.10 <3.14` and [UV](https://docs.astral.sh/uv/) installed.
 
-- Visit [crewAI documentation](https://docs.crewai.com)
-- Reach out through [crewAI GitHub](https://github.com/joaomdmoura/crewai)
-- [Join crewAI Discord](https://discord.com/invite/X4JWnZnxPb)
+1. **Clone and Install**:
 
-## Contributing
+```bash
+git clone [https://github.com/Zakey-Team-1/interview_coach]
+cd interview_coach
+uv tool install crewai
+crewai install
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+```
 
-## License
+2. **Environment Variables**:
+Create a copy from the `.env.example` file named `.env` and fill it
 
-This project uses crewAI and is subject to its licensing terms.
+3. **Run Locally**:
 
----
+```bash
+uv run serve
 
-Let's create amazing interview preparation experiences with the power of AI and crewAI! 🚀
+```
+
+The API will be available at `http://localhost:8080`. Access the interactive docs at `/docs`.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit issues or pull requests to improve the agent prompts or the orchestration flow.
